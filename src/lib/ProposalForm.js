@@ -11,10 +11,6 @@ class ProposalForm extends React.Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    purpose() {
-        window.metamask.purpose(this.props.coinkey, this.state.volume, this.state.targetcoin, this.state.ratio * this.state.volume)
-    }
-
     render() {
         return (
             <form onSubmit={this.handleSubmit}>
