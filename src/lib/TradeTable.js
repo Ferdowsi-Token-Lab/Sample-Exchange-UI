@@ -1,6 +1,6 @@
 import React from "react";
 import { ProposalForm } from "./ProposalForm"
-
+import { Button, Col, Row, Table } from 'react-bootstrap'
 
 class TradeTable extends React.Component {
     constructor(props) {
@@ -10,14 +10,17 @@ class TradeTable extends React.Component {
     render() {
         const columns = [];
         this.state.coins.forEach((coin) => {
-            columns.push(<CoinTable coinkey={coin.key} coinname={coin.name} coinicon={coin.icon} proposals={coin.proposals} coins={this.state.coins} />)
+            columns.push(
+                <Col xs lg="3">
+                    <CoinTable coinkey={coin.key} coinname={coin.name} coinicon={coin.icon} proposals={coin.proposals} coins={this.state.coins} />
+                    <ProposalForm coinkey={coin.key} targetcoins={this.state.coins} />
+                </Col>
+            )
         });
         return (
-            <table>
-                <tr>
-                    {columns}
-                </tr>
-            </table>
+            <Row className="justify-content-md-left">
+                {columns}
+            </Row>
         );
 
     }
@@ -30,19 +33,14 @@ class CoinTable extends React.Component {
             rows.push(<TradeRow key={proposal.key} volume={proposal.volume} ratio={proposal.ratio} targetcoin={proposal.targetcoin} />)
         });
         return (
-            <td>
-                <table>
-                    <tr>
-                        <th>{this.props.coinname}</th>
-                    </tr>
+            <Col>
+                <div className="text-center">
+                    {this.props.coinname}
+                </div>
+                <Table>
                     {rows}
-                    <tr>
-                        <td>
-                            <ProposalForm coinkey={this.props.coinkey} targetcoins={this.props.coins} /> {/* TODO Switch props parsing to context */}
-                        </td>
-                    </tr>
-                </table>
-            </td>
+                </Table>
+            </Col>
         );
     }
 }
@@ -50,10 +48,20 @@ class CoinTable extends React.Component {
 class TradeRow extends React.Component {
     render() {
         return (
-            <tr>
-                volume: {this.props.volume},  ratio: {this.props.ratio}, target-coin: {this.props.targetcoin}
-                <button>approve</button>
-            </tr>
+            <Row>
+                <Col>
+                    volume: {this.props.volume}
+                </Col>
+                <Col>
+                    ratio: {this.props.ratio}
+                </Col>
+                <Col>
+                    target-coin: {this.props.targetcoin}
+                </Col>
+                <Col>
+                    <Button>approve</Button>
+                </Col>
+            </Row>
         )
     };
 }
