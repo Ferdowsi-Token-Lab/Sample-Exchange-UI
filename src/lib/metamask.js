@@ -33,7 +33,7 @@ class MetaMask {
             "function cancel(uint id)",
         ];
 
-        this.tokens.foreach((token) => {
+        this.tokens.forEach((token) => {
             let _abi;
             if(token.type == "erc20"){
                 _abi = _erc20ABI;
@@ -70,7 +70,7 @@ class MetaMask {
         let _exchangetokens = this.tokens.filter(this._erc20Filter);
         let _coins = [];
         let key = 0;
-        _exchangetokens.foreach((token) => {
+        _exchangetokens.forEach((token) => {
             let coin = {};
             coin.name = token.name;
             coin.symbol = token.symbol;
@@ -85,7 +85,7 @@ class MetaMask {
             });
             let _pk = 0;
             coin.proposals = [];
-            _tp.foreach((p) => {
+            _tp.forEach((p) => {
                 let _proposal = {};
                 _proposal.volume = p.amount1;
                 _proposal.ratio = p.amount1 / p.amount2;
