@@ -1,5 +1,3 @@
-// import { ethers } from "ethers";
-
 class MetaMask {
     constructor(_tokens) {
         /*
@@ -9,11 +7,11 @@ class MetaMask {
     }
     async setupConnections() {
         let provider;
-        if(typeof window !== "undefined" && typeof window.ethereum !== "undefined"){
+        if (typeof window !== "undefined" && typeof window.ethereum !== "undefined") {
             provider = new ethers.providers.Web3Provider(window.ethereum); // TODO: use metamask-react
             await provider.send("eth_requestAccounts", []);
 
-        }else{
+        } else {
             // we are probably in hardhat console 
             provider = await hre.ethers.provider;
         }
@@ -72,15 +70,12 @@ class MetaMask {
         let [exchanger] = this.tokens.filter(this._exchangerFilter);
         let p = await exchanger.instance.queryFilter(exchanger.instance.filters.proposed());
         return p;
-        for(const proposal of p){
-
-        }
     }
     async getCoins() {
         let _exchangetokens = this.tokens.filter(this._erc20Filter);
         let _coins = [];
         let key = 0;
-        for(const token of _exchangetokens){
+        for (const token of _exchangetokens) {
             let coin = {};
             coin.name = token.name;
             coin.symbol = token.symbol;
@@ -108,45 +103,45 @@ class MetaMask {
         return _coins;
 
     }
-    getToken(tokenAddress){
-        return this.tokens.filter((token)=> {
-            if(token.address == tokenAddress){
+    getToken(tokenAddress) {
+        return this.tokens.filter((token) => {
+            if (token.address == tokenAddress) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         });
     }
-    getExchanger(){
+    getExchanger() {
         let ex = this.tokens.filter(this._exchangerFilter);
         return ex[0];
     }
-    propose(fromToken,toToken,amount,ratio){
+    async propose(fromToken, toToken, amount, ratio) {
         const ft = fromToken.instance;
         const tt = toToken.instance;
         const et = this.getExchanger();
-        await tt.instance.propose(ft.address,amount,tt.address,amount*ratio);
+        await tt.instance.propose(ft.address, amount, tt.address, amount * ratio);
     }
-    cancel(id){
+    async cancel(id) {
         const et = this.getExchanger();
         await et.instance.cancel(id);
     }
-    accept(id){
+    async accept(id) {
         const et = this.getExchanger();
         await et.instance.accpet(id);
     }
-    approve(fromToken,amount){
+    async approve(fromToken, amount) {
         const ft = fromToken.instance;
         const et = this.getExchanger();
-        await ft.approve(et.address,amount);
+        await ft.approve(et.address, amount);
     }
-    getTokens(){
+    getTokens() {
         let erc20tokens = this.tokens.filter(this._erc20Filter);
         let exchanger = this.tokens.filter(this._exchangerFilter);
-        for(let token of erc20tokens){
-            token.allowance = token.instance.allowance(this.signer.address,exchanger[0].instance.address);
+        for (let token of erc20tokens) {
+            token.allowance = token.instance.allowance(this.signer.address, exchanger[0].instance.address);
         }
-        for(let token of erc20tokens){
+        for (let token of erc20tokens) {
             token.balance = token.instance.balanceOf(this.signer.address);
         }
         return erc20tokens;
@@ -154,3 +149,8 @@ class MetaMask {
 
 
 }
+
+(async () => {
+    tokens = await (await fetch('Tokens.json')).json()
+    window.metamask = new MetaMask(tokens)
+})()

@@ -5,8 +5,18 @@ import { Button, Col, Row, Table } from 'react-bootstrap'
 class TradeTable extends React.Component {
     constructor(props) {
         super(props);
-        this.state = props
+        this.state = props;
     }
+
+    componentDidMount() {
+        setInterval(() => this.update(this), 5000);
+    }
+
+    update(self) {
+        console.log("try")
+        self.setState({ coins: window.metamask.getCoins() })
+    }
+
     render() {
         const columns = [];
         this.state.coins.forEach((coin) => {
@@ -18,9 +28,12 @@ class TradeTable extends React.Component {
             )
         });
         return (
-            <Row className="justify-content-md-left">
-                {columns}
-            </Row>
+            <>
+                <ScriptLoader></ScriptLoader>
+                <Row className="justify-content-md-left">
+                    {columns}
+                </Row>
+            </>
         );
 
     }
@@ -64,6 +77,24 @@ class TradeRow extends React.Component {
             </Row>
         )
     };
+}
+
+class ScriptLoader extends React.Component {
+    componentDidMount() {
+        let script = document.createElement("script");
+        script.async = true;
+        script.src = "https://cdn.ethers.io/lib/ethers-5.2.umd.min.js";
+        this.div.appendChild(script);
+        script = document.createElement("script");
+        script.async = true;
+        script.src = "metamask.js";
+        this.div.appendChild(script);
+    }
+    render() {
+        return (<div className="ScriptLoader" ref={el => (this.div = el)}>
+
+        </div>)
+    }
 }
 
 export { TradeTable }
