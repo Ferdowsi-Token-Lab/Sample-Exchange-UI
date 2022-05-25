@@ -18,6 +18,7 @@ class MetaMask {
             provider = await hre.ethers.provider;
         }
         const signer = await provider.getSigner();
+        this.signer = signer;
         const _erc20ABI = [
             "function name() view returns (string)",
             "function symbol() view returns (string)",
@@ -71,6 +72,9 @@ class MetaMask {
         let [exchanger] = this.tokens.filter(this._exchangerFilter);
         let p = await exchanger.instance.queryFilter(exchanger.instance.filters.proposed());
         return p;
+        for(const proposal of p){
+
+        }
     }
     async getCoins() {
         let _exchangetokens = this.tokens.filter(this._erc20Filter);
@@ -89,14 +93,13 @@ class MetaMask {
                     return false;
                 }
             });
-            let _pk = 0;
             coin.proposals = [];
             _tp.forEach((p) => {
                 let _proposal = {};
                 _proposal.volume = p.args.amount1.toNumber();
                 _proposal.ratio = p.args.amount1 / p.args.amount2;
                 _proposal.targetCoin = p.args.asset2;
-                _proposal.key = _pk++;
+                _proposal.key = p.args.id;
                 coin.proposals.push(_proposal);
             });
             _coins.push(coin);
@@ -105,7 +108,49 @@ class MetaMask {
         return _coins;
 
     }
-    // getCoinInfo(tokenAddress){
+    getToken(tokenAddress){
+        return this.tokens.filter((token)=> {
+            if(token.address == tokenAddress){
+                return true;
+            }else{
+                return false;
+            }
+        });
+    }
+    getExchanger(){
+        let ex = this.tokens.filter(this._exchangerFilter);
+        return ex[0];
+    }
+    propose(fromToken,toToken,amount,ratio){
+        const ft = fromToken.instance;
+        const tt = toToken.instance;
+        const et = this.getExchanger();
+        await tt.instance.propose(ft.address,amount,tt.address,amount*ratio);
+    }
+    cancel(id){
+        const et = this.getExchanger();
+        await et.instance.cancel(id);
+    }
+    accept(id){
+        const et = this.getExchanger();
+        await et.instance.accpet(id);
+    }
+    approve(fromToken,amount){
+        const ft = fromToken.instance;
+        const et = this.getExchanger();
+        await ft.approve(et.address,amount);
+    }
+    getTokens(){
+        let erc20tokens = this.tokens.filter(this._erc20Filter);
+        let exchanger = this.tokens.filter(this._exchangerFilter);
+        for(let token of erc20tokens){
+            token.allowance = token.instance.allowance(this.signer.address,exchanger[0].instance.address);
+        }
+        for(let token of erc20tokens){
+            token.balance = token.instance.balanceOf(this.signer.address);
+        }
+        return erc20tokens;
+    }
 
-    // }
+
 }
