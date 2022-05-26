@@ -74,12 +74,11 @@ class MetaMask {
     async getCoins() {
         let _exchangetokens = this.tokens.filter(this._erc20Filter);
         let _coins = [];
-        let key = 0;
         for (const token of _exchangetokens) {
             let coin = {};
             coin.name = token.name;
             coin.symbol = token.symbol;
-            coin.key = key++;
+            coin.key = token.address;
             let _proposals = await this.getProposals();
             let _tp = _proposals.filter((prp) => {
                 if (prp.args.asset1 == token.address) {
@@ -110,17 +109,16 @@ class MetaMask {
             } else {
                 return false;
             }
-        });
+        })[0];
     }
     getExchanger() {
         let ex = this.tokens.filter(this._exchangerFilter);
         return ex[0];
     }
     async propose(fromToken, toToken, amount, ratio) {
-        const ft = fromToken.instance;
-        const tt = toToken.instance;
+        console.log(fromToken, toToken, amount, ratio)
         const et = this.getExchanger();
-        await tt.instance.propose(ft.address, amount, tt.address, amount * ratio);
+        await et.instance.propose(fromToken, amount, toToken, amount * ratio);
     }
     async cancel(id) {
         const et = this.getExchanger();
@@ -152,5 +150,6 @@ class MetaMask {
 
 (async () => {
     tokens = await (await fetch('Tokens.json')).json()
-    window.metamask = new MetaMask(tokens)
+    window.metamask = new MetaMask(tokens);
+    window.metamask.setupConnections();
 })()

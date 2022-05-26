@@ -12,18 +12,18 @@ class TradeTable extends React.Component {
         setInterval(() => this.update(this), 5000);
     }
 
-    update(self) {
-        console.log("try")
-        self.setState({ coins: window.metamask.getCoins() })
+    async update(self) {
+        window.metamask.getCoins()
+        self.setState({ coins: await window.metamask.getCoins() })
     }
 
     render() {
         const columns = [];
         this.state.coins.forEach((coin) => {
             columns.push(
-                <Col xs lg="3">
+                <Col xs lg="4">
                     <CoinTable coinkey={coin.key} coinname={coin.name} coinicon={coin.icon} proposals={coin.proposals} coins={this.state.coins} />
-                    <ProposalForm coinkey={coin.key} targetcoins={this.state.coins} />
+                    <ProposalForm coinkey={coin.key} targetcoins={this.state.coins.filter((cn) => cn !== coin)} />
                 </Col>
             )
         });
@@ -59,6 +59,9 @@ class CoinTable extends React.Component {
 }
 
 class TradeRow extends React.Component {
+    async approve(id) {
+        window.metamask.accept(id);
+    }
     render() {
         return (
             <Row>
@@ -72,7 +75,7 @@ class TradeRow extends React.Component {
                     target-coin: {this.props.targetcoin}
                 </Col>
                 <Col>
-                    <Button>approve</Button>
+                    <Button onClick={this.approve(this.props.key)}>approve</Button>
                 </Col>
             </Row>
         )
