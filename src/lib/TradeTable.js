@@ -43,7 +43,9 @@ class CoinTable extends React.Component {
     render() {
         const rows = [];
         this.props.proposals.forEach((proposal) => {
-            rows.push(<TradeRow proposalkey={proposal.key} volume={proposal.volume} ratio={proposal.ratio} targetcoin={proposal.targetcoin} />)
+            if (proposal.status !== "pending")
+                return
+            rows.push(<TradeRow proposalkey={proposal.key} volume={proposal.volume} ratio={proposal.ratio} targetcoin={proposal.targetCoin} />)
         });
         return (
             <Col>
@@ -73,7 +75,7 @@ class TradeRow extends React.Component {
                     ratio: {this.props.ratio}
                 </Col>
                 <Col>
-                    target-coin: {this.props.targetcoin}
+                    target-coin: {window.metamask.getToken(this.props.targetcoin).name}
                 </Col>
                 <Col>
                     <Button onClick={() => this.approve(this.props.proposalkey)}>approve</Button>

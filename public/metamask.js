@@ -36,6 +36,7 @@ class MetaMask {
             "function propose(address asset1, uint amount1, address asset2, uint amount2) returns (uint)",
             "function accept(uint id)",
             "function cancel(uint id)",
+            "function getStatus(uint256 id) external view returns (string)",
         ];
 
         this.tokens.forEach((token) => {
@@ -93,7 +94,7 @@ class MetaMask {
                 }
             });
             coin.proposals = [];
-            _tp.forEach((p) => {
+            for (const p of _tp) {
                 let _proposal = {};
                 _proposal.volume = p.args.amount1.toNumber();
                 _proposal.ratio = p.args.amount1 / p.args.amount2;
@@ -101,7 +102,8 @@ class MetaMask {
                 _proposal.key = p.args.id;
                 _proposal.status = await this.getProposalStatus(p.args.id);
                 coin.proposals.push(_proposal);
-            });
+
+            }
             _coins.push(coin);
 
         }
