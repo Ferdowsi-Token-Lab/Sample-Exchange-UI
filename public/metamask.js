@@ -71,6 +71,11 @@ class MetaMask {
         let p = await exchanger.instance.queryFilter(exchanger.instance.filters.proposed());
         return p;
     }
+    async getProposalStatus(id) {
+        let [exchanger] = this.tokens.filter(this._exchangerFilter);
+        let status = exchanger.instance.getStatus(id);
+        return status;
+    }
     async getCoins() {
         let _exchangetokens = this.tokens.filter(this._erc20Filter);
         let _coins = [];
@@ -94,6 +99,7 @@ class MetaMask {
                 _proposal.ratio = p.args.amount1 / p.args.amount2;
                 _proposal.targetCoin = p.args.asset2;
                 _proposal.key = p.args.id;
+                _proposal.status = await this.getProposalStatus(p.args.id);
                 coin.proposals.push(_proposal);
             });
             _coins.push(coin);
