@@ -118,7 +118,7 @@ class MetaMask {
     async propose(fromToken, toToken, amount, ratio) {
         console.log(fromToken, toToken, amount, ratio)
         const et = this.getExchanger();
-        await et.instance.propose(fromToken, amount, toToken, amount * ratio);
+        await et.instance.propose(fromToken, amount, toToken, parseInt(amount / ratio));
     }
     async cancel(id) {
         const et = this.getExchanger();
@@ -126,7 +126,7 @@ class MetaMask {
     }
     async accept(id) {
         const et = this.getExchanger();
-        await et.instance.accpet(id);
+        await et.instance.accept(id);
     }
     async approve(fromToken, amount) {
         const ft = fromToken.instance;

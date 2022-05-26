@@ -43,7 +43,7 @@ class CoinTable extends React.Component {
     render() {
         const rows = [];
         this.props.proposals.forEach((proposal) => {
-            rows.push(<TradeRow key={proposal.key} volume={proposal.volume} ratio={proposal.ratio} targetcoin={proposal.targetcoin} />)
+            rows.push(<TradeRow proposalkey={proposal.key} volume={proposal.volume} ratio={proposal.ratio} targetcoin={proposal.targetcoin} />)
         });
         return (
             <Col>
@@ -60,7 +60,8 @@ class CoinTable extends React.Component {
 
 class TradeRow extends React.Component {
     async approve(id) {
-        window.metamask.accept(id);
+        console.log(id)
+        window.metamask.accept(id.toBigInt());
     }
     render() {
         return (
@@ -75,7 +76,7 @@ class TradeRow extends React.Component {
                     target-coin: {this.props.targetcoin}
                 </Col>
                 <Col>
-                    <Button onClick={this.approve(this.props.key)}>approve</Button>
+                    <Button onClick={() => this.approve(this.props.proposalkey)}>approve</Button>
                 </Col>
             </Row>
         )
